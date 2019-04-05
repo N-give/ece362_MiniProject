@@ -20,7 +20,7 @@ void setup_gpio (void) {
 // these can be different, this is just for testing currently
 /*
  * bit:     12  11  10  9   8   7   6   5   4   3   2   1   0
- * purpose: OE  CLK LAT SE3 SE2 SE1 SE0 R1  G1  B1  R2  G2  B2
+ * purpose: OE  CLK LAT SE3 SE2 SE1 SE0 R2  G2  B2  R1  G1  B1
  */
 void draw (void) {
     for (int i = 0; i < ROWS / 2; i++) {
