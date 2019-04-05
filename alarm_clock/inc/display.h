@@ -8,12 +8,12 @@
 #define SE2 8
 #define SE1 7
 #define SE0 6
-#define R1 5
-#define G1 4
-#define B1 3
-#define R2 2
-#define G2 1
-#define B2 0
+#define R2 5
+#define G2 4
+#define B2 3
+#define R1 2
+#define G1 1
+#define B1 0
 
 #define COLS 64
 #define ROWS 32 / 2

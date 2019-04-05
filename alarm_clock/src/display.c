@@ -27,7 +27,7 @@ void draw (void) {
         GPIOC->BSRR = 1<<OE;
         for (int j = 0; j < COLS; j++) {
             GPIOC->ODR = image[i][j];
-            GPIOC->ODR |= j<<SE0;
+            GPIOC->ODR |= (j<<SE0) & ((1<<SE0) | (1<<SE1) | (1<<SE2) | (1 << SE3));
 
             GPIOC->BSRR = 1<<CLK;
             GPIOC->BRR = 1<<CLK;
@@ -35,4 +35,20 @@ void draw (void) {
         GPIOC->BSRR = 1<<LAT;
         GPIOC->BRR = 1<<OE;
     }
+}
+
+void set_pixel (int row, int column, int color) {
+    if ((row > (ROWS * 2)) || (row < 0)) {
+        return;
+    }
+    if ((column > COLS) || (column < 0)) {
+        return;
+    }
+    if (row >= ROWS) {
+        color = color << 3;
+        image[row][column] &= ~((1<<R2) | (1<<G2) | (1<<B2));
+    } else {
+        image[row][column] &= ~((1<<R1) | (1<<G1) | (1<<B1));
+    }
+    image[row][column] |= color;
 }
