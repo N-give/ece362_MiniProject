@@ -10,10 +10,11 @@
 void setup_gpio (void) {
     // initially using gpioc because it doesn't have a handy table of alternate functions
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
-    GPIOC->MODER &= ~GPIO_MODER_MODER8;
-    GPIOC->MODER |= GPIO_MODER_MODER8_0;
-    GPIOC->MODER &= ~GPIO_MODER_MODER9;
-    GPIOC->MODER |= GPIO_MODER_MODER9_0;
+    // set pins 0-12 for output
+    for (int i = 0; i < 13; i++) {
+        GPIOC->MODER &= ~(0b11 << (i * 2));
+        GPIOC->MODER |= 0b01 << (i * 2);
+    }
 }
 
 // initially just using PC 0-12
@@ -27,12 +28,14 @@ void draw (void) {
         GPIOC->BSRR = 1<<OE;
         for (int j = 0; j < COLS; j++) {
             GPIOC->ODR = image[i][j];
-            GPIOC->ODR |= (j<<SE0) & ((1<<SE0) | (1<<SE1) | (1<<SE2) | (1 << SE3));
+            GPIOC->ODR |= (j<<SE0) & ((1 << SE3) | (1<<SE2) | (1<<SE1) | (1<<SE0));
 
             GPIOC->BSRR = 1<<CLK;
             GPIOC->BRR = 1<<CLK;
         }
+        // this may need some delay so the display actually has time to latch
         GPIOC->BSRR = 1<<LAT;
+        GPIOC->BRR = 1<<LAT;
         GPIOC->BRR = 1<<OE;
     }
 }
