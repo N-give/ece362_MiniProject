@@ -11,10 +11,13 @@
 
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
-			
 
-int main(void)
-{
+#include "display.c"
 
-	for(;;);
+
+int main (void) {
+  setup_gpio();
+  for (;;){
+    draw();
+  }
 }

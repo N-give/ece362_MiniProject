@@ -5,6 +5,7 @@
  * constant attnetion. I'll need to check how quickly the display has
  * to be refreshed to look good.
  */
+#include <time.h>
 #include "display.h"
 
 void setup_gpio (void) {
@@ -23,18 +24,38 @@ void setup_gpio (void) {
  * bit:     12  11  10  9   8   7   6   5   4   3   2   1   0
  * purpose: OE  CLK LAT SE3 SE2 SE1 SE0 R2  G2  B2  R1  G1  B1
  */
+/*
+ * 1. Begin with OE, CLK, and LAT low.
+ * 2. Initialize a private row counter N to 0.
+ * 3. Set R1,G1,B1 to the desired color for row N, column 0.
+ * 4. Set R2,G2,B2 to the desired color for row HEIGHT/2+N, column 0.
+ * 5. Set CLK high, then low, to shift in the color bit.
+ * 6. Repeat steps 3-5 WIDTH times for the remaining columns.
+ * 7. Set OE high to disable the LEDs.
+ * 8. Set LAT high, then low, to load the shift register contents into the LED outputs.
+ * 9. Set ABC (or ABCD) to the current row number N.
+ * 10. Set OE low to re-enable the LEDs.
+ * 11. Increment the row counter N.
+ * 12. Repeat steps 3-11 HEIGHT/2 times for the remaining rows.
+ */
+
 void draw (void) {
-    for (int i = 0; i < ROWS / 2; i++) {
-        GPIOC->BSRR = 1<<OE;
+    GPIOC->BRR = (0b111111111111); // set all output pins to 0
+    for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
-            GPIOC->ODR = image[i][j];
-            GPIOC->ODR |= (j<<SE0) & ((1 << SE3) | (1<<SE2) | (1<<SE1) | (1<<SE0));
+            GPIOC->BRR = 0b111111;      // clear all color data before setting new color values
+            GPIOC->BSRR = image[i][j];
 
             GPIOC->BSRR = 1<<CLK;
+            nanosleep(5000);
             GPIOC->BRR = 1<<CLK;
+            nanosleep(5000);
         }
         // this may need some delay so the display actually has time to latch
+        GPIOC->BSRR = 1<<OE;
         GPIOC->BSRR = 1<<LAT;
+        GPIOC->BRR = 0b1111<<SE0;
+        GPIOC->BSRR = (i<<SE0);
         GPIOC->BRR = 1<<LAT;
         GPIOC->BRR = 1<<OE;
     }
