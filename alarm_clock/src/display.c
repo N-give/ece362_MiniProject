@@ -8,6 +8,8 @@
 #include <time.h>
 #include "display.h"
 
+uint8_t display_color = 0b111;
+
 void setup_gpio (void) {
     // initially using gpioc because it doesn't have a handy table of alternate functions
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
@@ -61,13 +63,17 @@ void draw (void) {
     }
 }
 
-void set_pixel (int row, int column, int color) {
-    if ((row > (ROWS * 2)) || (row < 0)) {
+// The color sent should only use the 3 least significant bits
+// this function handles shifting the color for the bottom rows
+void set_pixel (int row, int column, uint8_t color) {
+    if ((row >= (ROWS * 2))
+        || (row < 0)
+        || (column >= COLS)
+        || (column < 0)
+    ) {
         return;
     }
-    if ((column > COLS) || (column < 0)) {
-        return;
-    }
+
     if (row >= ROWS) {
         color = color << 3;
         image[row][column] &= ~((1<<R2) | (1<<G2) | (1<<B2));
@@ -75,4 +81,73 @@ void set_pixel (int row, int column, int color) {
         image[row][column] &= ~((1<<R1) | (1<<G1) | (1<<B1));
     }
     image[row][column] |= color;
+}
+
+void display_char (char character, int col, int row) {
+    if ((col + 15) >= COLS
+        || col < 0
+        || (row + 16) >= (ROWS * 2)
+        || row < 0
+    ) {
+        return;
+    }
+
+    uint8_t ** char_img;
+
+    switch (character) {
+    case 'A':
+        char_img = half_letter_masks[0];
+        break;
+
+    case 'D':
+        char_img = half_letter_masks[1];
+        break;
+
+    case 'E':
+        char_img = half_letter_masks[2];
+        break;
+
+    case 'I':
+        char_img = half_letter_masks[3];
+        break;
+
+    case 'M':
+        char_img = half_letter_masks[4];
+        break;
+
+    case 'S':
+        char_img = half_letter_masks[5];
+        break;
+
+    case 'T':
+        char_img = half_letter_masks[6];
+        break;
+    }
+
+    for (int i=0; i < 16; i++) {
+        for (int j=0; j < 15; j++) {
+            set_pixel_color(i + row, j + col, (char_img[i][j] & display_color));
+        }
+    }
+}
+
+void display_num (char num, int col, int row) {
+    if ((col + 15) >= COLS
+        || col < 0
+        || (row + 16) >= (ROWS * 2)
+        || row < 0
+    ) {
+        return;
+    }
+    if (num >= 7 || num < 0) {
+        return;
+    }
+
+    uint8_t ** char_img = half_number_masks[num];
+
+    for (int i=0; i < 16; i++) {
+        for (int j=0; j < 15; j++) {
+            set_pixel_color(i + row, j + col, (char_img[i][j] & display_color));
+        }
+    }
 }
