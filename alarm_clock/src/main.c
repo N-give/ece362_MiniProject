@@ -8,17 +8,27 @@
   ******************************************************************************
 */
 
-#include<time.h>
+// #include<time.h>
 #include<stdint.h>
 
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
+
+// #ifndef DISPLAY
 #include "display.h"
-#include "display.c"
+// #endif
+
+// #include "display.c"
 
 int main (void) {
+  char disp = 0;
   setup_gpio();
-  for (;;){
+  for (int i = 0;;i=(i+1)%500){
+    if (i == 0) {
+      display_number(disp, 32, 0);
+      disp = (disp + 1) % 10;
+    }
+    // display_char('A', 0, 0);
     draw();
   }
 }
