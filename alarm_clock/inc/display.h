@@ -3,7 +3,6 @@
 
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
-#include <stdint.h>
 
 /*
  * color data stored as follows:
@@ -31,15 +30,44 @@
 
 void setup_gpio(void);
 void draw(void);
-void set_pixel(int, int, char);
-void display_char(char, int, int);
-void display_number(char, int, int);
-void nanosleep(int);
+void set_pixel(uint8_t, int, int);
+uint8_t get_pixel(int, int);
+void display_character(uint8_t, int, int);
+void change_number(uint8_t, int, int);
+void display_number(uint8_t, int, int);
+void clear_char(int, int);
+int clear_num_transition(uint8_t, int, int, int);
+int set_num_transition(uint8_t, int, int, int);
 
-char display_color;
+void set_display_time(int, int);
+void set_display_date(int, int);
+void display_colon();
+void display_dash();
 
-// turns all colors all the way on
-char test_image[ROWS][COLS];
+void clear_row(int);
+void clear_col(int);
+void clear_diamond();
+
+void clear_row_right(int);
+void clear_row_left(int);
+void clear_col_down(int);
+void clear_col_up(int);
+
+void set_row_right(int);
+void set_row_left(int);
+void set_col_down(int);
+void set_col_up(int);
+
+void flip_row_right(int);
+void flip_row_left(int);
+void flip_col_down(int);
+void flip_col_up(int);
+
+void set_swirl();
+void clear_swirl();
+void flip_swirl();
+
+uint8_t display_color;
 
 /*
  * //// example half display numbers ////
@@ -100,7 +128,7 @@ char test_image[ROWS][COLS];
 /*
  */
 
-char half_number_masks[10][16][15];
+uint8_t half_number_masks[10][16][15];
 
 /*
  * //// example half display letters ////
@@ -146,7 +174,7 @@ char half_number_masks[10][16][15];
  */
 
 // TODO: add the reast of the letters later
-char half_letter_masks[7][16][15];
+uint8_t half_letter_masks[7][16][15];
 
 /*
  * //// example half display numbers ////
@@ -170,7 +198,7 @@ char half_letter_masks[7][16][15];
  * .... .... .... .... .... .... .... ....
  */
 
-char half_character_masks[2][16][4];
+uint8_t half_character_masks[2][16][4];
 
 /*
  * color data stored as follows:
@@ -179,6 +207,6 @@ char half_character_masks[2][16][4];
  * init to 0
  */
 // uint8_t image[ROWS][COLS] = {0};
-char image[ROWS][COLS];
+uint8_t image[ROWS][COLS];
 
 #endif
