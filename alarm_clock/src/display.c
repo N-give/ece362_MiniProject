@@ -10,10 +10,7 @@
 #define NUMBERS
 #define CHARACTERS
 
-void test();
-
 uint8_t display_color = 0b011;
-
 
 #ifdef NUMBERS
 uint8_t half_number_masks[10][16][15] = {
@@ -385,19 +382,13 @@ uint8_t image[ROWS][COLS] = {
     {0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111},
 };
 
-void test() {
-    uint8_t test = image[0][0];
-    image[0][0] = 0;
-}
 
 void setup_gpio (void) {
     // initially using gpioc because it doesn't have a handy table of alternate functions
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
     // set pins 0-12 for output
-    for (int i = 0; i < 13; i++) {
-        GPIOC->MODER &= ~(0b11 << (i * 2));
-        GPIOC->MODER |= 0b01 << (i * 2);
-    }
+    GPIOB->MODER &= ~(0b11111111111111111111111111);
+    GPIOB->MODER |= 0b01010101010101010101010101;
 
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
     GPIOB->MODER &= ~(0b11<<(2*4));
