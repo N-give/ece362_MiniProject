@@ -4,12 +4,12 @@
 #include "stm32f0_discovery.h"
 #include <stdlib.h>
 
-uint8_t trans_time[4] = {
-  ADDR_SECONDS,
-  ((((35 / 10) & 0xF) << 4) | ((35 % 10) & 0xF)),
-  ((((30 / 10) & 0xF) << 4) | ((30 % 10) & 0xF)),
-  (((((11 / 10) & 0xF) << 4) | 0x40) |((11 % 10) & 0xF))
-};
+// uint8_t trans_time[4] = {
+//   ADDR_SECONDS,
+//   ((((35 / 10) & 0xF) << 4) | ((35 % 10) & 0xF)),
+//   ((((30 / 10) & 0xF) << 4) | ((30 % 10) & 0xF)),
+//   (((((11 / 10) & 0xF) << 4) | 0x40) |((11 % 10) & 0xF))
+// };
 
 
 void init_I2C2 () {
@@ -22,6 +22,7 @@ void init_I2C2 () {
   RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
   I2C2->CR1 &= ~I2C_CR1_PE;
   I2C2->CR1 &= ~(I2C_CR1_ANFOFF | I2C_CR1_ERRIE | I2C_CR1_NOSTRETCH);
+  // I2C2->CR1 |= I2C_CR1_TXIE | I2C_CR1_RXIE ;
   I2C2->CR1 |= I2C_CR1_TXDMAEN | I2C_CR1_RXDMAEN;
 
   I2C2->CR2 &= ~I2C_CR2_ADD10; //7-bit mode

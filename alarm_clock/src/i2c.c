@@ -2,6 +2,7 @@
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
 #include <stdlib.h>
+#include "display.h"
 /*
 uint8_t dec_to_bcd(uint8_t dec) {
   return ((((dec / 10) & 0xF) << 4) |
@@ -9,10 +10,44 @@ uint8_t dec_to_bcd(uint8_t dec) {
 }
 */
 
+void set_alarm(uint8_t * alarmMinsHrs){
+  alarm_setup();
+    // write_buf[2] = ((((desiredTime[1] / 10) & 0xF) << 4) |((desiredTime[1] % 10) & 0xF));
+    // write_buf[3] = (((((desiredTime[2] / 10) & 0x1) << 4)) | (((desiredTime[2] / 20) & 0x1) << 5) |((desiredTime[2] % 10) & 0xF));
+    uint8_t alarmSettings[3];
+    alarmSettings[0] = ADDR_ALARM2MINS; //add it in header file
+    alarmSettings[1] = ((((alarmMinsHrs[0] / 10) & 0xF) << 4) |((alarmMinsHrs[0] % 10) & 0xF));
+    alarmSettings[2] = (((((alarmMinsHrs[1] / 10) & 0x1) << 4)) | (((alarmMinsHrs[1] / 20) & 0x1) << 5) |((alarmMinsHrs[1] % 10) & 0xF));
+    I2C1_waitidle();
+    I2C1_start(ADDR_RTC_I2C, WR);
+    I2C1_senddata(alarmSettings, 3);
+    I2C1_stop(); 
+    alarmSettings[0] = ADDR_CONTROL;
+    alarmSettings[1] = 128;
+    alarmSettings[2] = 0x0E;
+    I2C1_waitidle();
+        I2C1_start(ADDR_RTC_I2C, WR);
+        I2C1_senddata(alarmSettings, 3);
+        I2C1_stop();
+
+}
+
+void alarm_setup(){
+    RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
+    GPIOB->MODER &= ~3;
+    GPIOB->MODER |= 1;
+    
+    EXTI->RTSR |= EXTI_RTSR_TR0;
+    EXTI->IMR |= EXTI_IMR_MR0;
+    NVIC->ISER[0] = 1 << EXTI0_1_IRQn;
+}
+
 //===========================================================================
 // Check wait for the bus to be idle.
 void I2C1_waitidle(void) {
-    while ((I2C1->ISR & I2C_ISR_BUSY) == I2C_ISR_BUSY);  // while busy, wait.
+    while ((I2C1->ISR & I2C_ISR_BUSY) == I2C_ISR_BUSY){  // while busy, wait.
+      draw();
+    }
 }
 
 //===========================================================================
@@ -102,7 +137,9 @@ void I2C1_stop() {
     // Master: Generate STOP bit after current byte has been transferred.
     I2C1->CR2 |= I2C_CR2_STOP;
     // Wait until STOPF flag is reset
-    while( (I2C1->ISR & I2C_ISR_STOPF) == 0);
+    while( (I2C1->ISR & I2C_ISR_STOPF) == 0){
+      draw();
+    }
     I2C1->ICR |= I2C_ICR_STOPCF; // Write to clear STOPF flag
 
     //---------End-----------
@@ -121,7 +158,9 @@ int I2C1_senddata(uint8_t* data, uint32_t size) {
     // cleared when the next data to be sent is written in the TXDR reg.
     // The TXIS flag is not set when a NACK is received.
         //int timeout = 0;
-        while( (I2C1->ISR & I2C_ISR_TXIS) == 0); // {
+        while( (I2C1->ISR & I2C_ISR_TXIS) == 0) {
+          draw();
+        }
                // timeout += 1;
                 //if (timeout > 1000000) return FAIL;
         //}
@@ -129,7 +168,9 @@ int I2C1_senddata(uint8_t* data, uint32_t size) {
         I2C1->TXDR = data[i] & I2C_TXDR_TXDATA;
     }
     // Wait until TC flag is set or the NACK flag is set.
-    while((I2C1->ISR & I2C_ISR_TC) == 0 && (I2C1->ISR & I2C_ISR_NACKF) == 0);
+    while((I2C1->ISR & I2C_ISR_TC) == 0 && (I2C1->ISR & I2C_ISR_NACKF) == 0){
+      draw();
+    }
     if ( (I2C1->ISR & I2C_ISR_NACKF) != 0)
         return FAIL;
     //i2c_stop();
@@ -152,7 +193,9 @@ int I2C1_readdata(uint8_t * data, uint32_t size) {
     // cleared when the next data to be sent is written in the TXDR reg.
     // The TXIS flag is not set when a NACK is received.
         int timeout = 0;
-        while( (I2C1->ISR & I2C_ISR_RXNE) == 0); // {
+        while( (I2C1->ISR & I2C_ISR_RXNE) == 0) {
+          draw();
+        }
                 //timeout += 1;
                // if (timeout > 1000000)
                   //  return FAIL;
@@ -161,7 +204,9 @@ int I2C1_readdata(uint8_t * data, uint32_t size) {
         data[i] = I2C1->RXDR;
     }
     // Wait until TC flag is set or the NACK flag is set.
-    while((I2C1->ISR & I2C_ISR_TC) == 0 && (I2C1->ISR & I2C_ISR_NACKF) == 0);
+    while((I2C1->ISR & I2C_ISR_TC) == 0 && (I2C1->ISR & I2C_ISR_NACKF) == 0){
+      draw();
+    }
 
     if ( (I2C1->ISR & I2C_ISR_NACKF) != 0)
         return FAIL;
@@ -217,7 +262,32 @@ void read_time(uint8_t * currentTime_buffer){
     int flag = I2C1_readdata(currentTime_buffer, 3);
     currentTime_buffer[0] = ((currentTime_buffer[0] >> 4) * 10) + (currentTime_buffer[0] & 0x0F);
     currentTime_buffer[1] = ((currentTime_buffer[1] >> 4) * 10) + (currentTime_buffer[1] & 0x0F);
-    currentTime_buffer[2] = (((currentTime_buffer[2] >> 4) & 0x1) * 10) + (currentTime_buffer[2] & 0x0F);
+    currentTime_buffer[2] = (((currentTime_buffer[2] >> 5) & 0x1) * 20) + (((currentTime_buffer[2] >> 4) & 0x1) * 10) + (currentTime_buffer[2] & 0x0F);
+    //return -25; for what?
+    if(flag == FAIL) printf("We failed!");
+    I2C1_stop(); //needed?
+    // return currentTime_buffer;
+    //---------End-----------
+}
+
+void read_alarm(uint8_t * currentTime_buffer){
+    // Student code goes here
+    //uint8_t currentTime_buffer[3];
+    // uint8_t * currentTime_buffer;
+    // currentTime_buffer = malloc(3*sizeof(uint8_t));
+    // uint8_t currentTime_buffer[3];
+    I2C1_waitidle();
+    I2C1_start(ADDR_RTC_I2C, WR);
+    uint8_t data[1];
+    data[0] = ADDR_SECONDS;
+    I2C1_senddata(data, 1);
+    //I2C1_stop(); //needed?
+    I2C1_start(ADDR_RTC_I2C, RD);
+    //int temp = -20;
+    int flag = I2C1_readdata(currentTime_buffer, 3);
+    currentTime_buffer[0] = ((currentTime_buffer[0] >> 4) * 10) + (currentTime_buffer[0] & 0x0F);
+    currentTime_buffer[1] = ((currentTime_buffer[1] >> 4) * 10) + (currentTime_buffer[1] & 0x0F);
+    currentTime_buffer[2] = (((currentTime_buffer[2] >> 5) & 0x1) * 20) + (((currentTime_buffer[2] >> 4) & 0x1) * 10) + (currentTime_buffer[2] & 0x0F);
     //return -25; for what?
     if(flag == FAIL) printf("We failed!");
     I2C1_stop(); //needed?
@@ -230,13 +300,13 @@ void read_time(uint8_t * currentTime_buffer){
 // Subroutines for step 5.
 //===========================================================================
 // See lab document for description
-void set_time() {
+void set_time(uint8_t * desiredTime) {
     // Student code goes here
     uint8_t write_buf[4];
     write_buf[0] = ADDR_SECONDS;
-    write_buf[1] = ((((35 / 10) & 0xF) << 4) |((35 % 10) & 0xF));
-    write_buf[2] = ((((30 / 10) & 0xF) << 4) |((30 % 10) & 0xF));
-    write_buf[3] = (((((11 / 10) & 0xF) << 4) | 0x40) |((11 % 10) & 0xF));
+    write_buf[1] = ((((desiredTime[0] / 10) & 0xF) << 4) |((desiredTime[0] % 10) & 0xF));
+    write_buf[2] = ((((desiredTime[1] / 10) & 0xF) << 4) |((desiredTime[1] % 10) & 0xF));
+    write_buf[3] = (((((desiredTime[2] / 10) & 0x1) << 4)) | (((desiredTime[2] / 20) & 0x1) << 5) |((desiredTime[2] % 10) & 0xF));
     I2C1_waitidle();
     I2C1_start(ADDR_RTC_I2C, WR);
     int flag = I2C1_senddata(write_buf, 4);

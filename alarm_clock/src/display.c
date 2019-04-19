@@ -10,13 +10,13 @@
 #define NUMBERS
 #define CHARACTERS
 
-uint8_t display_color = 0b011;
+uint8_t display_color = 0b001;
 
 #ifdef NUMBERS
 uint8_t half_number_masks[10][16][15] = {
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0, 0}, 
+        {0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0, 0},
         {0, 0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0}, 
         {0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0}, 
         {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0},
@@ -67,26 +67,24 @@ uint8_t half_number_masks[10][16][15] = {
         {0, 0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    },
-    {
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0},
-        {0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0},
-        {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0},
-        {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0},
-        {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0},
-        {0, 0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    },
-    {
+    }, {
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+      {0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0}, 
+      {0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0}, 
+      {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0}, 
+      {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0}, 
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0}, 
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0, 0}, 
+      {0, 0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0, 0}, 
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0}, 
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0}, 
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0}, 
+      {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0}, 
+      {0, 0b111, 0b111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0}, 
+      {0, 0, 0, 0b111, 0b111, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0}, 
+      {0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0b111, 0b111, 0, 0, 0, 0, 0}, 
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+    }, {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0b111, 0b111, 0b111, 0, 0, 0},
@@ -382,13 +380,28 @@ uint8_t image[ROWS][COLS] = {
     {0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111, 0b111111},
 };
 
+void setup_tim2() {
+  RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
+  TIM2->PSC = 4800000 - 1; // 48 000 000 / 480 000 = 100
+  TIM2->ARR = 3000 - 1;
+  TIM2->CR1 &= ~(TIM_CR1_DIR);
+  TIM2->DIER |= TIM_DIER_UIE;
+  NVIC->ISER[0] = 1<<TIM2_IRQn;
+  TIM2->CR1 |= TIM_CR1_CEN;
+}
 
 void setup_gpio (void) {
     // initially using gpioc because it doesn't have a handy table of alternate functions
     RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
     // set pins 0-12 for output
-    GPIOB->MODER &= ~(0b11111111111111111111111111);
-    GPIOB->MODER |= 0b01010101010101010101010101;
+    GPIOC->MODER &= ~(0b11111111111111111111111111);
+    GPIOC->MODER |= 0b01010101010101010101010101;
+
+    // for(int i=0;i<13;i++){
+    //   GPIOC->MODER &= ~(0b11<<(2*i));
+    //   GPIOC->MODER |= 0b01<<(2*i);
+    // }
 
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
     GPIOB->MODER &= ~(0b11<<(2*4));
@@ -419,27 +432,31 @@ void setup_gpio (void) {
  */
 
 void draw (void) {
-    GPIOC->BRR = (0b111111111111); // set all output pins to 0
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
-            GPIOC->BRR = 0b111111;      // clear all color data before setting new color values
-            GPIOC->BSRR = image[i][j] & (display_color | (display_color<<3));
+  // NVIC->ISER[0] = 
+  GPIOC->BRR = (0b111111111111); // set all output pins to 0
+  for (int i = 0; i < ROWS; i++) {
+    draw_row(i);
+  }
+}
 
-            GPIOC->BSRR = 1<<CLK;
-            // nanosleep(5000);
-            for(int x = 0; x<500; x+=83);
-            GPIOC->BRR = 1<<CLK;
-            for(int x = 0; x<500; x+=83);
-            // nanosleep(5000);
-        }
-        // this may need some delay so the display actually has time to latch
-        GPIOC->BSRR = 1<<OE;
-        GPIOC->BSRR = 1<<LAT;
-        GPIOC->BRR = 0b1111<<SE0;
-        GPIOC->BSRR = (i<<SE0);
-        GPIOC->BRR = 1<<LAT;
-        GPIOC->BRR = 1<<OE;
-    }
+void draw_row(int row) {
+  for (int j = 0; j < COLS; j++) {
+    GPIOC->BRR = 0b111111;      // clear all color data before setting new color values
+    GPIOC->BSRR = image[row][j] & (display_color | (display_color<<3));
+
+    GPIOC->BSRR = 1<<CLK;
+    // nanosleep(5000);
+    // for(int x = 0; x<200; x+=83);
+    GPIOC->BRR = 1<<CLK;
+    // for(int x = 0; x<200; x+=83);
+    // nanosleep(5000);
+  }
+  GPIOC->BSRR = 1<<OE;
+  GPIOC->BSRR = 1<<LAT;
+  GPIOC->BRR = 0b1111<<SE0;
+  GPIOC->BSRR = (row<<SE0);
+  GPIOC->BRR = 1<<LAT;
+  GPIOC->BRR = 1<<OE;
 }
 
 void set_display_time(int hr, int min){
@@ -460,10 +477,14 @@ void set_display_time(int hr, int min){
     clear_char(0, 0);
     if (h_tens) {
         display_number(h_tens, 0, 0);
+        draw();
     }
     display_number(h_ones, 0, 15);
+    draw();
     display_number(m_tens, 0, 34);
+    draw();
     display_number(m_ones, 0, 49);
+    draw();
 }
 
 void set_display_date(int month, int day){
@@ -484,13 +505,18 @@ void set_display_date(int month, int day){
     clear_char(16, 0);
     if (m_tens) {
         display_number(m_tens, 16, 0);
+        draw();
     }
     display_number(m_ones, 16, 15);
-    clear_char(16, 0);
+    draw();
+    clear_char(16, 34);
+    draw();
     if (d_tens) {
         display_number(d_tens, 16, 34);
+        draw();
     }
     display_number(d_ones, 16, 49);
+    draw();
 }
 
 void display_dash() {
@@ -533,7 +559,7 @@ void display_number (uint8_t index, int row, int col) {
 void display_colon(){
     for (int i = 0; i < 16; i++) {
         for(int j = 0; j < 5; j++) {
-            set_pixel(half_character_masks[0][i][j], i, (j+30));
+            set_pixel(half_character_masks[0][i][j], i, (j+29));
         }
     }
 }

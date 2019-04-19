@@ -18,7 +18,7 @@ void I2C1_stop();
 int I2C1_senddata(uint8_t* data, uint32_t size);
 int I2C1_readdata(uint8_t* data, uint32_t size);
 void read_time(uint8_t *);
-void set_time();
+void set_time(uint8_t *);
 void init_DS3231();
 
 /*

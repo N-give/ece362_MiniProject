@@ -10,6 +10,7 @@
 #define ADDR_DATE    0x04
 #define ADDR_MONTH   0x05
 #define ADDR_YEAR    0x06
+#define ADDR_ALARM2MINS 0x0B
 
 #define ADDR_CONTROL 0x0E
 #define ADDR_STATUS  0x0F
