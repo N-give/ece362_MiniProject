@@ -64,13 +64,13 @@ int main() {
 
 // int main (void) {
 //   init_I2C1();
-// 
+//
 //   // config_dma();
 //   // init_I2C2();
 //   setup_gpio();
 //   // setup_tim2();
 //   // init_DS3231();
-// 
+//
 //   // test_dma();
 //   // set_time2(trans_time, 4);
 //   // read_time2(global_time, 3);
@@ -80,7 +80,7 @@ int main() {
 //   read_time(global_time);
 //   memcpy(local_time, global_time, 3);
 //   set_display_time(local_time[2], local_time[1]);
-// 
+//
 //   display_number(8, 16, 0);
 //   display_number(9, 16, 15);
 //   display_number(6, 16, 34);
@@ -88,13 +88,13 @@ int main() {
 //   display_dash();
 //   display_colon();
 //   draw();
-// 
+//
 //   for (;;) {
 //     // draw_row(0);
 //     // draw_row(3);
 //     // draw();
 //     if (redraw) {
-// 
+//
 //       // for(int j = 0; j<3; j++){
 //       //   local_time[j] = global_time[j];
 //       // }
@@ -161,6 +161,7 @@ void EXTI0_1_IRQHandler(void){ //connect square wave ~ 1 kHzfrom alarm enable of
         alarmCount = 0;
         GPIOB->ODR ^= 1; //buzzer connected to PB0
     }
-    
 }
 
+// void I2C1_IRQHandler() {
+// }
