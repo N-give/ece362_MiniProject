@@ -20,6 +20,8 @@ int I2C1_readdata(uint8_t* data, uint32_t size);
 void read_time(uint8_t *);
 void set_time(uint8_t *);
 void init_DS3231();
+void set_date(uint8_t *);
+void read_date(uint8_t *);
 
 /*
 inline uint8_t dec_to_bcd(uint8_t dec) {

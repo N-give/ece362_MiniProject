@@ -10,25 +10,46 @@ uint8_t dec_to_bcd(uint8_t dec) {
 }
 */
 
+void set_date(uint8_t * dateMonth){
+    uint8_t dateSettings[3];
+    dateSettings[0] = ADDR_DATE; //add it in header file 0x04
+    dateSettings[1] = ((((dateMonth[0] + 1) / 10) & 0x3) << 4)  | (((dateMonth[0] + 1) % 10) & 0xF);
+    dateSettings[2] = ((((dateMonth[1] + 1) / 10) & 0x1) << 4)  | (((dateMonth[1] + 1) % 10) & 0xF);
+    I2C1_waitidle();
+    I2C1_start(ADDR_RTC_I2C, WR);
+    I2C1_senddata(dateSettings, 3);
+    I2C1_stop();
+}
+
+void read_date(uint8_t * currentDateMonth){
+    I2C1_waitidle();
+    I2C1_start(ADDR_RTC_I2C, WR);
+    uint8_t data[1];
+    data[0] = ADDR_DATE;
+    I2C1_senddata(data, 1);
+    I2C1_start(ADDR_RTC_I2C, RD);
+    I2C1_readdata(currentDateMonth, 2);
+    currentDateMonth[0] = ((((currentDateMonth[0]) >>4) & 0x3) * 10) + ((currentDateMonth[0]) & 0xF) - 1;
+    currentDateMonth[1] = ((((currentDateMonth[1]) >>4) & 0x1) * 10) + ((currentDateMonth[1]) & 0xF) - 1;
+    I2C1_stop();
+}
+
 void set_alarm(uint8_t * alarmMinsHrs){
   alarm_setup();
     // write_buf[2] = ((((desiredTime[1] / 10) & 0xF) << 4) |((desiredTime[1] % 10) & 0xF));
     // write_buf[3] = (((((desiredTime[2] / 10) & 0x1) << 4)) | (((desiredTime[2] / 20) & 0x1) << 5) |((desiredTime[2] % 10) & 0xF));
-    uint8_t alarmSettings[3];
+    uint8_t alarmSettings[5];
     alarmSettings[0] = ADDR_ALARM2MINS; //add it in header file
     alarmSettings[1] = ((((alarmMinsHrs[0] / 10) & 0xF) << 4) |((alarmMinsHrs[0] % 10) & 0xF));
     alarmSettings[2] = (((((alarmMinsHrs[1] / 10) & 0x1) << 4)) | (((alarmMinsHrs[1] / 20) & 0x1) << 5) |((alarmMinsHrs[1] % 10) & 0xF));
+    alarmSettings[3] = 128;
+    alarmSettings[4] = 0x0E;
     I2C1_waitidle();
     I2C1_start(ADDR_RTC_I2C, WR);
-    I2C1_senddata(alarmSettings, 3);
-    I2C1_stop(); 
-    alarmSettings[0] = ADDR_CONTROL;
-    alarmSettings[1] = 128;
-    alarmSettings[2] = 0x0E;
-    I2C1_waitidle();
-        I2C1_start(ADDR_RTC_I2C, WR);
-        I2C1_senddata(alarmSettings, 3);
-        I2C1_stop();
+    I2C1_senddata(alarmSettings, 5);
+    I2C1_stop();
+   // alarmSettings[0] = ADDR_CONTROL;
+
 
 }
 
@@ -36,7 +57,7 @@ void alarm_setup(){
     RCC->AHBENR |= RCC_AHBENR_GPIOBEN;
     GPIOB->MODER &= ~3;
     GPIOB->MODER |= 1;
-    
+
     EXTI->RTSR |= EXTI_RTSR_TR0;
     EXTI->IMR |= EXTI_IMR_MR0;
     NVIC->ISER[0] = 1 << EXTI0_1_IRQn;
@@ -234,8 +255,8 @@ void simple_osc(){
 void init_DS3231(){
     uint8_t write_buf[3];
     write_buf[0] = ADDR_CONTROL;
-    write_buf[1] = 0x00;  // DS3231 EOSC enabled, INTCN enabled, SQW set to 1Hz
-    write_buf[2] = 0x08; //clears alarm flags
+    write_buf[1] = 0x40;  // DS3231 EOSC enabled, INTCN enabled, SQW set to 1Hz
+    write_buf[2] = 0x00; //clears alarm flags
 
     I2C1_waitidle();
     I2C1_start(ADDR_RTC_I2C, WR);
