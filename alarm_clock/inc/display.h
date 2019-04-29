@@ -29,6 +29,8 @@
 #define ROWS 16
 
 void setup_tim2();
+void setup_tim3();
+void setup_tim15();
 void setup_gpio(void);
 void draw(void);
 void draw_row(int);

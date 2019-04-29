@@ -35,6 +35,7 @@ int main() {
   init_DS3231();
   setup_tim2();
   setup_tim3();
+  setup_tim15();
 
   uint8_t alarm_time[] = {0, 0};
   read_time(global_time);
@@ -285,3 +286,13 @@ void EXTI0_1_IRQHandler(void){ //connect square wave ~ 1 kHzfrom alarm enable of
     }
 }
 
+void TIM15_IRQHandler () {
+  TIM15->SR &= ~TIM_SR_UIF;
+  TIM3->ARR = ((TIM3->ARR + 50) % 200) + 50;
+  uint8_t pix = get_pixel(16, 30);
+  if (pix) {
+    set_pixel(0, 16, 30);
+  } else {
+    set_pixel(display_color, 16, 30);
+  }
+}
